@@ -1,3 +1,4 @@
+require("dotenv").config();
 import Server from "./Server";
 import Database from "./Database";
 

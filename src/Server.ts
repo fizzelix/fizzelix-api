@@ -5,11 +5,11 @@ import Router from "./routes/Routes";
 
 class Server {
   private app: express.Application;
-  private PORT: number;
+  private PORT: number | string;
 
-  constructor() {
+  constructor(PORT: number) {
     this.app = express();
-    this.PORT = 3000;
+    this.PORT = process.env.PORT || PORT;
     this.config();
   }
 
@@ -26,4 +26,4 @@ class Server {
   }
 }
 
-export default new Server();
+export default new Server(8000);
