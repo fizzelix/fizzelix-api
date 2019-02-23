@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/Program.ts",
   "scripts": {
-    "start": "tsc && node dist/Program.js",
+    "start": "node dist/Program.js",
+    "heroku-postbuild": "tsc",
     "dev-start": "nodemon dist/Program.js",
     "dev-compile": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
