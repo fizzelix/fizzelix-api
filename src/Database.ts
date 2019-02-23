@@ -1,6 +1,8 @@
 require("dotenv").config();
 import mongoose from "mongoose";
 
+const db = process.env.DATABASE_URL || "development";
+
 class Database {
   private databaseEnvironment: string;
   private enviroment: string;
@@ -37,4 +39,4 @@ class Database {
   }
 }
 
-export default new Database("dev");
+export default new Database(db);
