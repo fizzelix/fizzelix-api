@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/Program.ts",
   "scripts": {
-    "start": "nodemon dist/Program.js",
-    "dev": "tsc --watch",
+    "start": "tsc && node dist/Program.js",
+    "dev-start": "nodemon dist/Program.js",
+    "dev-compile": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "plr",
