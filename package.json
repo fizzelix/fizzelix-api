@@ -4,11 +4,15 @@
   "description": "",
   "main": "src/Program.ts",
   "scripts": {
+    "postinstall": "npm run build",
+    "build": "tsc",
     "start": "node dist/Program.js",
-    "heroku-postbuild": "tsc",
     "dev-start": "nodemon dist/Program.js",
     "dev-compile": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "11.10.0"
   },
   "author": "plr",
   "license": "ISC",
