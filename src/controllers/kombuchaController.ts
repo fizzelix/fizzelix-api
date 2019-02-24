@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Request, Response } from "express";
+import { User } from "../models/users";
 import { Kombucha } from "../models/kombucha";
 
 // /kombucha/	GET	index   XX
@@ -22,19 +23,29 @@ class KombuchaController {
   }
 
   public addNewKombucha(req: Request, res: Response): void {
-    const newKombucha = new Kombucha(req.body);
+    Kombucha.create(req.body, (err: any, kombucha: any) => {
+      if (err) return console.log("Failed to create kombucha");
 
-    newKombucha.save((err: any, kombucha: mongoose.Document) => {
-      if (err) {
-        console.log("Failed to save a Kombucha");
-        res.send(err);
-      }
-      res.redirect("/kombucha");
+      // username will be dynamic once authentication is set up,
+      // it will read from req.user.username
+      User.findOne({ username: "Paulo" }, (err: any, user: any) => {
+        if (err) {
+          console.log("Couldn't find user");
+        }
+        user.kombuchas.push(kombucha);
+        user.save((err: any, data: any) => {
+          if (err) {
+            console.log("Failed to save data", err);
+          }
+          res.redirect("/users");
+        });
+      });
     });
   }
 
   public getKombucha(req: Request, res: Response): void {
     // url looks like this: /kombucha/5c6e10b194bff38119f1f82u
+    // populate("user") refers to object key in kombuchaSchema
     Kombucha.findById(
       req.params.kombuchaId,
       (err: any, kombucha: mongoose.Document) => {
