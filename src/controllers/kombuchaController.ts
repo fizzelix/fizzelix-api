@@ -29,8 +29,8 @@ class KombuchaController {
         console.log("Failed to save a Kombucha");
         res.send(err);
       }
-      // TODO: redirect in client
       res.status(200).send("Save Successful. Redirecting...");
+      res.redirect("/kombucha");
     });
   }
 
@@ -57,8 +57,8 @@ class KombuchaController {
           console.log("Failed to edit kombucha");
           res.send(err);
         }
-        // TODO: redirect in client
         res.status(200).send("Update Successful. Redirecting...");
+        res.redirect(`/kombucha/${kombucha._id}`);
       }
     );
   }
@@ -66,11 +66,11 @@ class KombuchaController {
   public deleteKombucha(req: Request, res: Response): void {
     Kombucha.findByIdAndDelete(req.params.id, (err: any, kombucha: any) => {
       if (err) {
-        console.log("Failed to Delete komucha");
+        console.log("Failed to Delete kombucha");
         res.send(err);
+        res.redirect("/kombucha");
       }
-      // TODO: redirect in client
-      res.status(200).send("Delete Successful. Redirecting...");
+      res.redirect("/kombucha");
     });
   }
 }
