@@ -29,7 +29,6 @@ class KombuchaController {
         console.log("Failed to save a Kombucha");
         res.send(err);
       }
-      res.status(200).send("Save Successful. Redirecting...");
       res.redirect("/kombucha");
     });
   }
@@ -57,7 +56,6 @@ class KombuchaController {
           console.log("Failed to edit kombucha");
           res.send(err);
         }
-        res.status(200).send("Update Successful. Redirecting...");
         res.redirect(`/kombucha/${kombucha._id}`);
       }
     );
@@ -70,7 +68,6 @@ class KombuchaController {
         if (err) {
           console.log("Failed to Delete kombucha");
           res.send(err);
-          res.redirect("/kombucha");
         }
         res.redirect("/kombucha");
       }
