@@ -37,7 +37,7 @@ class KombuchaController {
   public getKombucha(req: Request, res: Response): void {
     // url looks like this: /kombucha/5c6e10b194bff38119f1f82u
     Kombucha.findById(
-      req.params.id,
+      req.params.kombuchaId,
       (err: any, kombucha: mongoose.Document) => {
         if (err) {
           console.log("Failed to get kombucha");
@@ -50,7 +50,7 @@ class KombuchaController {
 
   public editKombucha(req: Request, res: Response): void {
     Kombucha.findByIdAndUpdate(
-      req.params.id,
+      req.params.kombuchaId,
       req.body,
       (err: any, kombucha: any) => {
         if (err) {
@@ -64,14 +64,17 @@ class KombuchaController {
   }
 
   public deleteKombucha(req: Request, res: Response): void {
-    Kombucha.findByIdAndDelete(req.params.id, (err: any, kombucha: any) => {
-      if (err) {
-        console.log("Failed to Delete kombucha");
-        res.send(err);
+    Kombucha.findByIdAndDelete(
+      req.params.kombuchaId,
+      (err: any, kombucha: any) => {
+        if (err) {
+          console.log("Failed to Delete kombucha");
+          res.send(err);
+          res.redirect("/kombucha");
+        }
         res.redirect("/kombucha");
       }
-      res.redirect("/kombucha");
-    });
+    );
   }
 }
 
