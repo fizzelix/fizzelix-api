@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import KombuchaController from "../controllers/kombuchaController";
+import UserController from "../controllers/usersController";
 
 class Routes {
   public routes(app: any): void {
@@ -18,6 +19,15 @@ class Routes {
     app.get("/kombucha/:kombuchaId", KombuchaController.getKombucha);
     app.put("/kombucha/:kombuchaId", KombuchaController.editKombucha);
     app.delete("/kombucha/:kombuchaId", KombuchaController.deleteKombucha);
+
+    /***
+      Users Routes
+    ***/
+    app.get("/users", UserController.getUsers);
+    app.post("/users", UserController.addNewUser);
+    app.get("/users/:userId", UserController.getUser);
+    app.put("/users/:userId", UserController.editUser);
+    app.delete("/users/:userId", UserController.deleteUser);
   }
 }
 
