@@ -15,6 +15,9 @@ class Routes {
     ***/
     app.get("/kombucha", KombuchaController.getKombuchas);
     app.post("/kombucha", KombuchaController.addNewKombucha);
+    app.get("/kombucha/:id", KombuchaController.getKombucha);
+    app.put("/kombucha/:id", KombuchaController.editKombucha);
+    app.delete("/kombucha/:id", KombuchaController.deleteKombucha);
   }
 }
 
