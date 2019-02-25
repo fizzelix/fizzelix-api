@@ -1,7 +1,13 @@
-import mongoose from "mongoose";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
+import mongoose from "mongoose";
+declare module "mongoose" {
+  interface Document {
+    password: string;
+  }
+}
 
 import { User } from "../models/users";
 
