@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import passport from "passport";
 import KombuchaController from "../controllers/kombuchaController";
 import UserController from "../controllers/usersController";
 
@@ -13,6 +14,11 @@ class Routes {
 
     app.post("/register", UserController.register);
     app.post("/login", UserController.login);
+    app.get(
+      "/current",
+      passport.authenticate("jwt", { session: false }),
+      UserController.getCurrentUser
+    );
 
     /***
       Kombucha Routes

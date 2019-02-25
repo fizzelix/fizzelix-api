@@ -69,6 +69,11 @@ class UsersController {
     });
   }
 
+  public getCurrentUser(req: Request, res: Response): void {
+    const { id, username, email } = req.user;
+    res.json({ id, username, email });
+  }
+
   public getUsers(req: Request, res: Response): void {
     User.find({}, (err: any, users) => {
       if (err) {
