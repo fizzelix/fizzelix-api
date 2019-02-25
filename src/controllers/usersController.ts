@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 import { User } from "../models/users";
 
@@ -29,6 +30,42 @@ class UsersController {
           res.json(user);
         });
       });
+    });
+  }
+
+  public login(req: Request, res: Response): void {
+    User.findOne({ email: req.body.email }, (err: any, user: any) => {
+      if (!user) {
+        console.log("Failed to find user");
+        res.status(404).json({ error: "User not found" });
+      }
+
+      bcrypt.compare(
+        req.body.password,
+        user.password,
+        (err: any, isMatch: boolean) => {
+          if (err) return console.log("Failed to compare passwords");
+          if (isMatch) {
+            const payload = {
+              id: user._id,
+              username: user.username
+            };
+            if (process.env.JWT_SECRET !== undefined) {
+              jwt.sign(
+                payload,
+                process.env.JWT_SECRET,
+                { expiresIn: "1hr" },
+                (err: any, token: any) => {
+                  if (err) return console.log("Failed to create token");
+                  res.json({ success: true, token: `Bearer ${token}` });
+                }
+              );
+            }
+          } else {
+            res.status(400).json({ error: "Incorrect Password" });
+          }
+        }
+      );
     });
   }
 
