@@ -1,8 +1,37 @@
 import mongoose from "mongoose";
 import { Request, Response } from "express";
+import bcrypt from "bcryptjs";
+
 import { User } from "../models/users";
 
 class UsersController {
+  public register(req: Request, res: Response): void {
+    User.findOne({ email: req.body.email }, (err: any, user: any) => {
+      if (err) return console.log(err);
+      if (user) {
+        console.log("Email already exists");
+        return res.status(404).json({ error: "Email already exists" });
+      }
+
+      const newUser = new User(req.body);
+
+      bcrypt.hash(newUser.password, 10, (err: Error, hash: string) => {
+        if (err) {
+          console.log("Failed to hash password");
+          throw err;
+        }
+        newUser.password = hash;
+        newUser.save((err: any, user: any) => {
+          if (err) {
+            console.log("Failed to save user");
+            res.send(err);
+          }
+          res.json(user);
+        });
+      });
+    });
+  }
+
   public getUsers(req: Request, res: Response): void {
     User.find({}, (err: any, users) => {
       if (err) {

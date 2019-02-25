@@ -11,6 +11,8 @@ class Routes {
       res.status(200).send("Fizzelix API");
     });
 
+    app.post("/register", UserController.register);
+
     /***
       Kombucha Routes
     ***/
