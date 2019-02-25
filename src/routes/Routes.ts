@@ -12,6 +12,7 @@ class Routes {
     });
 
     app.post("/register", UserController.register);
+    app.post("/login", UserController.login);
 
     /***
       Kombucha Routes
