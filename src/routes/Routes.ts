@@ -15,7 +15,7 @@ class Routes {
     app.post("/register", UserController.register);
     app.post("/login", UserController.login);
     app.get(
-      "/current",
+      "/users/current",
       passport.authenticate("jwt", { session: false }),
       UserController.getCurrentUser
     );

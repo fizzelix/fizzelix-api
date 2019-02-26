@@ -76,8 +76,7 @@ class UsersController {
   }
 
   public getCurrentUser(req: Request, res: Response): void {
-    const { id, username, email } = req.user;
-    res.json({ id, username, email });
+    res.json(req.user);
   }
 
   public getUsers(req: Request, res: Response): void {
@@ -121,7 +120,7 @@ class UsersController {
           console.log("Failed to edit user");
           res.send(err);
         }
-        res.redirect(`/users/${user._id}`);
+        res.json({ message: `Successfully updated ${user.username}` });
       }
     );
   }
@@ -129,10 +128,10 @@ class UsersController {
   public deleteUser(req: Request, res: Response): void {
     User.findByIdAndDelete(req.params.userId, (err: any, user: any) => {
       if (err) {
-        console.log("Failed to delete user");
+        console.log(`Error deleting ${user.username}`);
         res.send(err);
       }
-      res.redirect("/users");
+      res.json({ message: `Successfully deleted ${user.username}` });
     });
   }
 }
