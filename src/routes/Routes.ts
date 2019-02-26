@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import Auth from "../Authentication";
 import KombuchaController from "../controllers/kombuchaController";
 import UserController from "../controllers/usersController";
 
@@ -11,23 +12,35 @@ class Routes {
       res.status(200).send("Fizzelix API");
     });
 
+    app.post("/register", UserController.register);
+    app.post("/login", UserController.login);
+    app.get("/users/current", Auth.protect(), UserController.getCurrentUser);
+
     /***
       Kombucha Routes
     ***/
     app.get("/kombucha", KombuchaController.getKombuchas);
-    app.post("/kombucha", KombuchaController.addNewKombucha);
+    app.post("/kombucha", Auth.protect(), KombuchaController.addNewKombucha);
     app.get("/kombucha/:kombuchaId", KombuchaController.getKombucha);
-    app.put("/kombucha/:kombuchaId", KombuchaController.editKombucha);
-    app.delete("/kombucha/:kombuchaId", KombuchaController.deleteKombucha);
+    app.put(
+      "/kombucha/:kombuchaId",
+      Auth.protect(),
+      KombuchaController.editKombucha
+    );
+    app.delete(
+      "/kombucha/:kombuchaId",
+      Auth.protect(),
+      KombuchaController.deleteKombucha
+    );
 
     /***
       Users Routes
     ***/
     app.get("/users", UserController.getUsers);
-    app.post("/users", UserController.addNewUser);
+    app.post("/users", Auth.protect(), UserController.addNewUser);
     app.get("/users/:userId", UserController.getUser);
-    app.put("/users/:userId", UserController.editUser);
-    app.delete("/users/:userId", UserController.deleteUser);
+    app.put("/users/:userId", Auth.protect(), UserController.editUser);
+    app.delete("/users/:userId", Auth.protect(), UserController.deleteUser);
   }
 }
 
