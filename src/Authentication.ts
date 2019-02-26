@@ -9,8 +9,6 @@ class Authentication {
   }
 
   private config(): void {
-    console.log("passport authentication configured");
-
     const opt: StrategyOptions = {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET
@@ -32,8 +30,11 @@ class Authentication {
   }
 
   public initialize(): any {
-    console.log("passport initialized");
     return passport.initialize();
+  }
+
+  public protect(): any {
+    return passport.authenticate("jwt", { session: false });
   }
 }
 
