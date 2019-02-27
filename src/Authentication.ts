@@ -15,8 +15,8 @@ class Authentication {
     };
 
     passport.use(
-      new Strategy(opt, (jwtPayload: any, done: any) => {
-        const { id } = jwtPayload;
+      new Strategy(opt, (payload: any, done: any) => {
+        const { id } = payload;
         User.findById(id, (err: any, user: any) => {
           if (err) return done(err, null);
           if (user) {

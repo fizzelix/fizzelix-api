@@ -52,15 +52,12 @@ class UsersController {
         (err: any, isMatch: boolean) => {
           if (err) return console.log("Failed to compare passwords");
           if (isMatch) {
-            const payload = {
-              id: user._id,
-              username: user.username
-            };
+            const payload = { id: user._id };
             if (process.env.JWT_SECRET !== undefined) {
               jwt.sign(
                 payload,
                 process.env.JWT_SECRET,
-                { expiresIn: "1hr" },
+                { expiresIn: 1200 },
                 (err: any, token: any) => {
                   if (err) return console.log("Failed to create token");
                   res.json({ success: true, token: `Bearer ${token}` });
