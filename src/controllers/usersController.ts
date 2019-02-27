@@ -89,16 +89,6 @@ class UsersController {
     });
   }
 
-  public getUser(req: Request, res: Response): void {
-    User.findById(req.params.userId, (err: any, user: mongoose.Document) => {
-      if (err) {
-        console.log("Failed to get user");
-        res.send(err);
-      }
-      res.status(200).json(user);
-    });
-  }
-
   public editUser(req: Request, res: Response): void {
     User.findByIdAndUpdate(
       req.params.userId,

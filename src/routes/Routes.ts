@@ -36,9 +36,7 @@ class Routes {
     /***
       Users Routes
     ***/
-    app.get("/users", UserController.getUsers);
     app.post("/users", Auth.protect(), UserController.addNewUser);
-    app.get("/users/:userId", UserController.getUser);
     app.put("/users/:userId", Auth.protect(), UserController.editUser);
     app.delete("/users/:userId", Auth.protect(), UserController.deleteUser);
   }
