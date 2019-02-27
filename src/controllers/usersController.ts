@@ -73,7 +73,8 @@ class UsersController {
   }
 
   public getCurrentUser(req: Request, res: Response): void {
-    res.json(req.user);
+    const { email, username, yearsOfExperience } = req.user;
+    res.json({ email, username, yearsOfExperience });
   }
 
   public getUsers(req: Request, res: Response): void {
