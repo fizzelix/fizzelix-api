@@ -77,16 +77,6 @@ class UsersController {
     res.json({ email, username, yearsOfExperience });
   }
 
-  public getUsers(req: Request, res: Response): void {
-    User.find({}, (err: any, users) => {
-      if (err) {
-        console.log("Couldn't get users");
-        res.send(err);
-      }
-      res.json(users);
-    });
-  }
-
   public addNewUser(req: Request, res: Response): void {
     const newUser = new User(req.body);
 
