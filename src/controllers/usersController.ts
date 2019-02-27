@@ -80,12 +80,12 @@ class UsersController {
   public addNewUser(req: Request, res: Response): void {
     const newUser = new User(req.body);
 
-    newUser.save((err: any, user: mongoose.Document) => {
+    newUser.save((err: any, user: any) => {
       if (err) {
         console.log("Failed to save user");
         res.send(err);
       }
-      res.redirect("/users");
+      res.json({ message: `successfully saved user ${user.username}` });
     });
   }
 
