@@ -3,14 +3,6 @@ import { Request, Response } from "express";
 import { User } from "../models/users";
 import { Kombucha } from "../models/kombucha";
 
-// /kombucha/	GET	index   XX
-// /kombucha/new	GET	new (client)
-// /kombucha	POST	create    XX
-// /kombucha/:id	GET	show    XX
-// /kombucha/:id/edit	GET	edit  (client)
-// /kombucha/:id	PATCH/PUT	update  XX
-// /kombucha/:id	DELETE	destroy XX
-
 class KombuchaController {
   public getKombuchas(req: Request, res: Response): void {
     Kombucha.find({}, (err: any, kombuchas) => {
@@ -23,21 +15,24 @@ class KombuchaController {
   }
 
   public addNewKombucha(req: Request, res: Response): void {
-    Kombucha.create(req.body, (err: any, kombucha: any) => {
-      if (err) return console.log("Failed to create kombucha");
+    User.findOne({ username: req.user.username }, (err: any, user: any) => {
+      if (err) {
+        console.log(err);
+        res.json({ error: "Couldn't find user" });
+      }
 
-      // username will be dynamic once authentication is set up,
-      // it will read from req.user.username
-      User.findOne({ username: "Paulo" }, (err: any, user: any) => {
+      Kombucha.create(req.body, (err: any, kombucha: any) => {
         if (err) {
-          console.log("Couldn't find user");
+          console.log(err);
+          res.json({ error: "Failed to create a kombucha" });
         }
+
         user.kombuchas.push(kombucha);
         user.save((err: any, data: any) => {
           if (err) {
             console.log("Failed to save data", err);
           }
-          res.redirect("/users");
+          res.json({ message: "success" });
         });
       });
     });
