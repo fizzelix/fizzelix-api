@@ -57,7 +57,7 @@ class UsersController {
               jwt.sign(
                 payload,
                 process.env.JWT_SECRET,
-                { expiresIn: 1200 },
+                { expiresIn: 20 },
                 (err: any, token: any) => {
                   if (err) return console.log("Failed to create token");
                   res.json({ success: true, token: `Bearer ${token}` });
@@ -73,8 +73,16 @@ class UsersController {
   }
 
   public getCurrentUser(req: Request, res: Response): void {
-    const { email, username, yearsOfExperience } = req.user;
-    res.json({ email, username, yearsOfExperience });
+    let { authorization } = req.headers;
+    if (authorization && process.env.JWT_SECRET !== undefined) {
+      authorization = authorization.replace(/^Bearer\s/, "");
+      jwt.verify(authorization, process.env.JWT_SECRET, (err: any) => {
+        if (err) return console.log(err.message);
+
+        const { email, username, yearsOfExperience } = req.user;
+        res.json({ email, username, yearsOfExperience });
+      });
+    }
   }
 
   public addNewUser(req: Request, res: Response): void {
