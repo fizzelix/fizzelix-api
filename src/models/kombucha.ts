@@ -12,7 +12,8 @@ const kombuchaSchema = new mongoose.Schema({
   },
   brewDate: { type: Date, required: true },
   bottleDate: { type: Date, required: false },
-  harvestDate: { type: Date, required: false }
+  harvestDate: { type: Date, required: false },
+  notes: { type: String, required: false }
 });
 
 export const Kombucha = mongoose.model("Kombucha", kombuchaSchema);
