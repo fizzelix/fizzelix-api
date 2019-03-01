@@ -45,7 +45,7 @@ class UsersController {
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (!user) {
         console.log("Failed to find user");
-        res.status(404).json({ error: "User not found" });
+        return res.status(404).json({ error: "User not found" });
       }
 
       bcrypt.compare(
