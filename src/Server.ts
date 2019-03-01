@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import helmet from "helmet";
+import cors from "cors";
 
 import Authentication from "./Authentication";
 import Router from "./routes/Routes";
@@ -16,6 +17,7 @@ class Server {
   }
 
   private config(): void {
+    this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(Authentication.initialize());
