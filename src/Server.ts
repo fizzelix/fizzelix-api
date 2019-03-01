@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import helmet from 'helmet'
+import helmet from "helmet";
 
 import Authentication from "./Authentication";
 import Router from "./routes/Routes";
@@ -16,7 +16,7 @@ class Server {
   }
 
   private config(): void {
-    this.app.use(helmet())
+    this.app.use(helmet());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(Authentication.initialize());
