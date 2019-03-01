@@ -40,6 +40,8 @@ class UsersController {
   }
 
   public login(req: Request, res: Response): void {
+    console.log(req.body);
+
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (!user) {
         console.log("Failed to find user");
