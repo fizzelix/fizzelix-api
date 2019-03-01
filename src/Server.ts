@@ -16,7 +16,6 @@ class Server {
   }
 
   private config(): void {
-    this.app.use(helmet());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(Authentication.initialize());
