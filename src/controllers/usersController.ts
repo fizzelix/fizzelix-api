@@ -14,10 +14,13 @@ import { User } from "../models/users";
 class UsersController {
   public register(req: Request, res: Response): void {
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
-      if (err) return console.log(err);
+      if (err) {
+        console.log(err);
+        return res.json({ message: "Unexpected Error. Try again" });
+      }
       if (user) {
         console.log("Email already exists");
-        return res.status(404).json({ error: "Email already exists" });
+        return res.status(404).json({ message: "Email already exists" });
       }
 
       const newUser = new User(req.body);
@@ -25,15 +28,17 @@ class UsersController {
       bcrypt.hash(newUser.password, 10, (err: Error, hash: string) => {
         if (err) {
           console.log("Failed to hash password");
-          throw err;
+          return res.json({ message: "Invalid password" });
         }
         newUser.password = hash;
         newUser.save((err: any, user: any) => {
           if (err) {
             console.log("Failed to save user");
-            res.send(err);
+            return res.json({
+              message: `Failed to register ${user.email}. Please try again`
+            });
           }
-          res.json(user);
+          return res.json(user);
         });
       });
     });
@@ -43,7 +48,7 @@ class UsersController {
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (!user) {
         console.log("Failed to find user");
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
 
       bcrypt.compare(
@@ -65,7 +70,7 @@ class UsersController {
               );
             }
           } else {
-            res.status(400).json({ error: "Incorrect Password" });
+            res.status(400).json({ message: "Incorrect Password" });
           }
         }
       );
