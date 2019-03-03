@@ -16,11 +16,11 @@ class UsersController {
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
-        return res.json({ message: "Unexpected Error. Try again" });
+        return res.json({ error: "Unexpected Error. Try again" });
       }
       if (user) {
         console.log("Email already exists");
-        return res.status(404).json({ message: "Email already exists" });
+        return res.status(404).json({ error: "Email already exists" });
       }
 
       const newUser = new User(req.body);
@@ -28,14 +28,14 @@ class UsersController {
       bcrypt.hash(newUser.password, 10, (err: Error, hash: string) => {
         if (err) {
           console.log("Failed to hash password");
-          return res.json({ message: "Invalid password" });
+          return res.json({ error: "Invalid password" });
         }
         newUser.password = hash;
         newUser.save((err: any, user: any) => {
           if (err) {
             console.log("Failed to save user");
             return res.json({
-              message: `Failed to register ${user.email}. Please try again`
+              error: `Failed to register ${user.email}. Please try again`
             });
           }
           return res.json(user);
@@ -48,7 +48,7 @@ class UsersController {
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (!user) {
         console.log("Failed to find user");
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ error: "User not found" });
       }
 
       bcrypt.compare(
@@ -70,7 +70,7 @@ class UsersController {
               );
             }
           } else {
-            res.status(400).json({ message: "Incorrect Password" });
+            res.status(400).json({ error: "Incorrect Password" });
           }
         }
       );
@@ -86,7 +86,10 @@ class UsersController {
         authorization,
         process.env.JWT_SECRET,
         (err: jwt.VerifyErrors) => {
-          if (err) return console.log(err);
+          if (err) {
+            console.log(err);
+            return res.json({ error: "Unable to verify user" });
+          }
           const { email, username, yearsOfExperience } = req.user;
           res.json({ email, username, yearsOfExperience });
         }
@@ -100,7 +103,7 @@ class UsersController {
     newUser.save((err: any, user: any) => {
       if (err) {
         console.log("Failed to save user");
-        res.send(err);
+        return res.json({ error: "Failed to save user" });
       }
       res.json({ message: `successfully saved user ${user.username}` });
     });
@@ -113,7 +116,7 @@ class UsersController {
       (err: any, user: any) => {
         if (err) {
           console.log("Failed to edit user");
-          res.send(err);
+          return res.json({ error: "Failed to edit user" });
         }
         res.json({ message: `Successfully updated ${user.username}` });
       }
@@ -124,7 +127,7 @@ class UsersController {
     User.findByIdAndDelete(req.params.userId, (err: any, user: any) => {
       if (err) {
         console.log(`Error deleting ${user.username}`);
-        res.send(err);
+        return res.json({ error: "Error deleting user" });
       }
       res.json({ message: `Successfully deleted ${user.username}` });
     });
