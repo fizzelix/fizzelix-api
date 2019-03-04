@@ -27,7 +27,7 @@ class UsersController {
 
       bcrypt.hash(newUser.password, 10, (err: Error, hash: string) => {
         if (err) {
-          console.log("Failed to hash password");
+          console.log(err, "Failed to hash password");
           return res.json({ error: "Invalid password" });
         }
         newUser.password = hash;
@@ -35,7 +35,7 @@ class UsersController {
           if (err) {
             console.log("Failed to save user");
             return res.json({
-              error: `Failed to register ${user.email}. Please try again`
+              error: `Failed to register. Please try again`
             });
           }
           return res.json(user);
