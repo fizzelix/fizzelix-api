@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+declare module "express" {
+  interface Request {
+    user: any;
+  }
+}
 
 import mongoose from "mongoose";
 declare module "mongoose" {
@@ -8,6 +11,9 @@ declare module "mongoose" {
     password: string;
   }
 }
+
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 import { User } from "../models/users";
 
@@ -90,8 +96,8 @@ class UsersController {
             console.log(err);
             return res.json({ error: "Unable to verify user" });
           }
-          const { email, username, yearsOfExperience } = req.user;
-          res.json({ email, username, yearsOfExperience });
+          const { email, kombuchas } = req.user;
+          res.json({ email, kombuchas });
         }
       );
     }
