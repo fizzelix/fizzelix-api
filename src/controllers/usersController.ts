@@ -12,7 +12,7 @@ import { User } from "../models/users";
 
 import Validation from "../Validation";
 
-const { validateRegistration } = Validation;
+const { validateRegistration, validateLogin } = Validation;
 
 class UsersController {
   public register(req: Request, res: Response) {
@@ -59,40 +59,65 @@ class UsersController {
     });
   }
 
-  public login(req: Request, res: Response): void {
+  public login(req: Request, res: Response) {
+    const { errors, isValid } = validateLogin(
+      req.body.email,
+      req.body.password
+    );
+
+    if (!isValid) {
+      return res.status(400).json(errors); // Bad Request
+    }
+
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
+      if (err) {
+        console.log(err);
+        errors.general = "Unexpected Error. Please try again.";
+        return res.status(503).json(errors); // Service Unavailable
+      }
       if (!user) {
         console.log("Failed to find user");
-        return res.status(404).json({ error: "User not found" });
+        errors.general = "Failed to find user";
+        return res.status(404).json(errors); // Not Found
       }
 
       bcrypt.compare(
         req.body.password,
         user.password,
         (err: any, isMatch: boolean) => {
-          if (err) return console.log("Failed to compare passwords");
+          if (err) {
+            console.log(err);
+            errors.general = "Unexpected Error. Please try again.";
+            return res.status(503).json(errors); // Service Unavailable
+          }
           if (isMatch) {
             const payload = { id: user._id };
             if (process.env.JWT_SECRET !== undefined) {
               jwt.sign(
                 payload,
                 process.env.JWT_SECRET,
-                { expiresIn: 1200 },
+                { expiresIn: 1200 }, // 20 min
                 (err: any, token: any) => {
-                  if (err) return console.log("Failed to create token");
+                  if (err) {
+                    console.log(err);
+                    errors.general = "Failed to create token";
+                    return res.status(503).json(errors); // Service Unavailable
+                  }
                   res.json({ success: true, token: `Bearer ${token}` });
                 }
               );
             }
           } else {
-            res.status(400).json({ error: "Incorrect Password" });
+            console.log("Incorrect Password");
+            errors.general = "Incorrect Password";
+            return res.status(409).json(errors); // Conflict
           }
         }
       );
     });
   }
 
-  public getCurrentUser(req: Request, res: Response): void {
+  public getCurrentUser(req: Request, res: Response) {
     let { authorization } = req.headers;
     if (authorization && process.env.JWT_SECRET !== undefined) {
       authorization = authorization.replace(/^Bearer\s/, "");
@@ -112,7 +137,7 @@ class UsersController {
     }
   }
 
-  public addNewUser(req: Request, res: Response): void {
+  public addNewUser(req: Request, res: Response) {
     const newUser = new User(req.body);
 
     newUser.save((err: any, user: any) => {
@@ -124,7 +149,7 @@ class UsersController {
     });
   }
 
-  public editUser(req: Request, res: Response): void {
+  public editUser(req: Request, res: Response) {
     User.findByIdAndUpdate(
       req.params.userId,
       req.body,
@@ -138,7 +163,7 @@ class UsersController {
     );
   }
 
-  public deleteUser(req: Request, res: Response): void {
+  public deleteUser(req: Request, res: Response) {
     User.findByIdAndDelete(req.params.userId, (err: any, user: any) => {
       if (err) {
         console.log(`Error deleting ${user.username}`);

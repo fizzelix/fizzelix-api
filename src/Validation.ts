@@ -30,6 +30,23 @@ class Validation {
     }
     return { errors, isValid: isCompletelyEmpty(errors) };
   }
+
+  public validateLogin(email: string, password: string) {
+    const errors: {
+      general?: string;
+      email?: string;
+      password?: string;
+    } = {};
+
+    if (!isEmail(email)) {
+      errors.email = "Please enter a valid Email";
+    }
+
+    if (isEmpty(password)) {
+      errors.password = "Please enter Password";
+    }
+    return { errors, isValid: isCompletelyEmpty(errors) };
+  }
 }
 
 export default new Validation();
