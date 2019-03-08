@@ -22,19 +22,19 @@ class UsersController {
     );
 
     if (!isValid) {
-      return res.status(400).json(errors); // Bad Request
+      return res.status(400).json({ errors }); // Bad Request
     }
 
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
         errors.general = "Unexpected Error. Try again";
-        return res.status(503).json(errors); // Service Unavailable
+        return res.status(503).json({ errors }); // Service Unavailable
       }
       if (user) {
         console.log("Email already exists");
         errors.email = "Email already exists";
-        return res.status(409).json(errors); // Conflict
+        return res.status(409).json({ errors }); // Conflict
       }
 
       const newUser = new User(req.body);
@@ -43,7 +43,7 @@ class UsersController {
         if (err) {
           console.log(err, "Failed to hash password");
           errors.password = "Invalid Password";
-          return res.status(503).json(errors); // Service Unavailable
+          return res.status(503).json({ errors }); // Service Unavailable
         }
 
         newUser.password = hash;
@@ -51,7 +51,7 @@ class UsersController {
           if (err) {
             console.log("Failed to save user");
             errors.general = "Failed to register. Please try again";
-            return res.status(503).json(errors); // Service Unavailable
+            return res.status(503).json({ errors }); // Service Unavailable
           }
           return res.json(user);
         });
@@ -66,19 +66,19 @@ class UsersController {
     );
 
     if (!isValid) {
-      return res.status(400).json(errors); // Bad Request
+      return res.status(400).json({ errors }); // Bad Request
     }
 
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
         errors.general = "Unexpected Error. Please try again.";
-        return res.status(503).json(errors); // Service Unavailable
+        return res.status(503).json({ errors }); // Service Unavailable
       }
       if (!user) {
         console.log("Failed to find user");
         errors.general = "Failed to find user";
-        return res.status(404).json(errors); // Not Found
+        return res.status(404).json({ errors }); // Not Found
       }
 
       bcrypt.compare(
@@ -88,7 +88,7 @@ class UsersController {
           if (err) {
             console.log(err);
             errors.general = "Unexpected Error. Please try again.";
-            return res.status(503).json(errors); // Service Unavailable
+            return res.status(503).json({ errors }); // Service Unavailable
           }
           if (isMatch) {
             const payload = { id: user._id };
@@ -101,7 +101,7 @@ class UsersController {
                   if (err) {
                     console.log(err);
                     errors.general = "Failed to create token";
-                    return res.status(503).json(errors); // Service Unavailable
+                    return res.status(503).json({ errors }); // Service Unavailable
                   }
                   res.json({ success: true, token: `Bearer ${token}` });
                 }
@@ -110,7 +110,7 @@ class UsersController {
           } else {
             console.log("Incorrect Password");
             errors.general = "Incorrect Password";
-            return res.status(409).json(errors); // Conflict
+            return res.status(409).json({ errors }); // Conflict
           }
         }
       );
