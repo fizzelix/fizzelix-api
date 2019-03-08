@@ -1,32 +1,40 @@
-import { Request, Response } from "express";
-declare module "express" {
-  interface Request {
-    user: any;
-  }
-}
-
-import mongoose from "mongoose";
 declare module "mongoose" {
   interface Document {
     password: string;
   }
 }
 
+import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models/users";
 
+import Validation from "../Validation";
+
+const { validateRegistration } = Validation;
+
 class UsersController {
-  public register(req: Request, res: Response): void {
+  public register(req: Request, res: Response) {
+    const { errors, isValid } = validateRegistration(
+      req.body.email,
+      req.body.password
+    );
+
+    if (!isValid) {
+      return res.status(400).json(errors); // Bad Request
+    }
+
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
-        return res.json({ error: "Unexpected Error. Try again" });
+        errors.general = "Unexpected Error. Try again";
+        return res.status(503).json(errors); // Service Unavailable
       }
       if (user) {
         console.log("Email already exists");
-        return res.status(404).json({ error: "Email already exists" });
+        errors.email = "Email already exists";
+        return res.status(409).json(errors); // Conflict
       }
 
       const newUser = new User(req.body);
@@ -34,15 +42,16 @@ class UsersController {
       bcrypt.hash(newUser.password, 10, (err: Error, hash: string) => {
         if (err) {
           console.log(err, "Failed to hash password");
-          return res.json({ error: "Invalid password" });
+          errors.password = "Invalid Password";
+          return res.status(503).json(errors); // Service Unavailable
         }
+
         newUser.password = hash;
         newUser.save((err: any, user: any) => {
           if (err) {
             console.log("Failed to save user");
-            return res.json({
-              error: `Failed to register. Please try again`
-            });
+            errors.general = "Failed to register. Please try again";
+            return res.status(503).json(errors); // Service Unavailable
           }
           return res.json(user);
         });
