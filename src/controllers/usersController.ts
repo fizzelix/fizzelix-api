@@ -144,18 +144,6 @@ class UsersController {
     }
   }
 
-  public addNewUser(req: Request, res: Response) {
-    const newUser = new User(req.body);
-
-    newUser.save((err: any, user: any) => {
-      if (err) {
-        console.log("Failed to save user");
-        return res.json({ error: "Failed to save user" });
-      }
-      res.json({ message: `successfully saved user ${user.username}` });
-    });
-  }
-
   public editUser(req: Request, res: Response) {
     User.findByIdAndUpdate(
       req.params.userId,
