@@ -138,33 +138,46 @@ class UsersController {
           }
           // data returned from the database
           const { email, kombuchas } = req.user;
-          res.json({ email, kombuchas });
+          res.json(req.user);
         }
       );
     }
   }
 
   public editUser(req: Request, res: Response) {
+    const errors: {
+      general?: string;
+    } = {};
+
     User.findByIdAndUpdate(
       req.params.userId,
       req.body,
       (err: any, user: any) => {
         if (err) {
-          console.log("Failed to edit user");
-          return res.json({ error: "Failed to edit user" });
+          console.log(err);
+          errors.general = "Failed to edit user";
+          return res.status(503).json(errors);
         }
-        res.json({ message: `Successfully updated ${user.username}` });
+        res.json({
+          success: `Successfully updated user!`,
+          user: user
+        });
       }
     );
   }
 
   public deleteUser(req: Request, res: Response) {
+    const errors: {
+      general?: string;
+    } = {};
+
     User.findByIdAndDelete(req.params.userId, (err: any, user: any) => {
       if (err) {
-        console.log(`Error deleting ${user.username}`);
-        return res.json({ error: "Error deleting user" });
+        console.log(err);
+        errors.general = "Error deleting user";
+        return res.status(503).json(errors);
       }
-      res.json({ message: `Successfully deleted ${user.username}` });
+      res.json({ success: `Successfully deleted user` });
     });
   }
 }
