@@ -118,9 +118,14 @@ class UsersController {
   }
 
   public getCurrentUser(req: Request, res: Response) {
+    const errors: {
+      general?: string;
+    } = {};
+
     let { authorization } = req.headers;
+
     if (authorization && process.env.JWT_SECRET !== undefined) {
-      authorization = authorization.replace(/^Bearer\s/, "");
+      authorization = authorization.replace(/^Bearer\s/, ""); // Remove Bearer in JWT
 
       jwt.verify(
         authorization,
@@ -128,8 +133,10 @@ class UsersController {
         (err: jwt.VerifyErrors) => {
           if (err) {
             console.log(err);
-            return res.json({ error: "Unable to verify user" });
+            errors.general = "Unable to verify user";
+            return res.status(503).json(errors);
           }
+          // data returned from the database
           const { email, kombuchas } = req.user;
           res.json({ email, kombuchas });
         }
