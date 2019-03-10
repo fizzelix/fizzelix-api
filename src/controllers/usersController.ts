@@ -1,6 +1,15 @@
+// Merge Declarations
 declare module "mongoose" {
   interface Document {
     password: string;
+  }
+}
+declare module "express" {
+  interface Request {
+    user: {
+      email: string;
+      kombuchas: [object];
+    };
   }
 }
 
@@ -9,49 +18,46 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models/users";
-
-import Validation from "../Validation";
-
-const { validateRegistration, validateLogin } = Validation;
+import { Validation } from "../Validation";
 
 class UsersController {
   public register(req: Request, res: Response) {
-    const { errors, isValid } = validateRegistration(
-      req.body.email,
-      req.body.password
-    );
+    const validation = new Validation();
+    validation.validateRegistration(req.body.email, req.body.password);
 
-    if (!isValid) {
-      return res.status(400).json({ errors }); // Bad Request
+    if (!validation.isValid) {
+      return res.status(400).json({ errors: validation.errors }); // Bad Request
     }
 
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
-        errors.general = "Unexpected Error. Try again";
-        return res.status(503).json({ errors }); // Service Unavailable
+        validation.setErrors("Unexpected Error. Try again", "general");
+        return res.status(503).json({ errors: validation.errors }); // Service Unavailable
       }
       if (user) {
-        console.log("Email already exists");
-        errors.email = "Email already exists";
-        return res.status(409).json({ errors }); // Conflict
+        validation.setErrors("Email already exists", "email");
+        return res.status(409).json({ errors: validation.errors }); // Conflict
       }
 
       const newUser = new User(req.body);
 
       bcrypt.hash(newUser.password, 10, (err: Error, hash: string) => {
         if (err) {
-          console.log(err, "Failed to hash password");
-          errors.password = "Invalid Password";
-          return res.status(503).json({ errors }); // Service Unavailable
+          console.log(err);
+          validation.setErrors("Invalid Password", "password");
+          return res.status(503).json({ errors: validation.errors }); // Service Unavailable
         }
 
         newUser.password = hash;
         newUser.save((err: any, user: any) => {
           if (err) {
-            console.log("Failed to save user");
-            errors.general = "Failed to register. Please try again";
-            return res.status(503).json({ errors }); // Service Unavailable
+            console.log(err);
+            validation.setErrors(
+              "Failed to register. Please try again",
+              "general"
+            );
+            return res.status(503).json({ errors: validation.errors }); // Service Unavailable
           }
           return res.json(user);
         });
@@ -60,25 +66,25 @@ class UsersController {
   }
 
   public login(req: Request, res: Response) {
-    const { errors, isValid } = validateLogin(
-      req.body.email,
-      req.body.password
-    );
+    const validation = new Validation();
+    validation.validateLogin(req.body.email, req.body.password);
 
-    if (!isValid) {
-      return res.status(400).json({ errors }); // Bad Request
+    if (!validation.isValid) {
+      return res.status(400).json({ errors: validation.errors }); // Bad Request
     }
 
     User.findOne({ email: req.body.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
-        errors.general = "Unexpected Error. Please try again.";
-        return res.status(503).json({ errors }); // Service Unavailable
+        validation.setErrors(
+          "Unexpected Error. Please try again",
+          validation.GENERAL
+        );
+        return res.status(503).json({ errors: validation.errors }); // Service Unavailable
       }
       if (!user) {
-        console.log("Failed to find user");
-        errors.general = "Failed to find user";
-        return res.status(404).json({ errors }); // Not Found
+        validation.setErrors("Failed to find user", validation.GENERAL);
+        return res.status(404).json({ errors: validation.errors }); // Not Found
       }
 
       bcrypt.compare(
@@ -87,8 +93,11 @@ class UsersController {
         (err: any, isMatch: boolean) => {
           if (err) {
             console.log(err);
-            errors.general = "Unexpected Error. Please try again.";
-            return res.status(503).json({ errors }); // Service Unavailable
+            validation.setErrors(
+              "Unexpected Error. Please try again",
+              validation.GENERAL
+            );
+            return res.status(503).json({ errors: validation.errors }); // Service Unavailable
           }
           if (isMatch) {
             const payload = { id: user._id };
@@ -97,20 +106,22 @@ class UsersController {
                 payload,
                 process.env.JWT_SECRET,
                 { expiresIn: 1200 }, // 20 min
-                (err: any, token: any) => {
+                (err: any, token: string) => {
                   if (err) {
                     console.log(err);
-                    errors.general = "Failed to create token";
-                    return res.status(503).json({ errors }); // Service Unavailable
+                    validation.setErrors(
+                      "Unexpected Error. Please try again.",
+                      validation.GENERAL
+                    );
+                    return res.status(503).json({ errors: validation.errors }); // Service Unavailable
                   }
                   res.json({ success: true, token: `Bearer ${token}` });
                 }
               );
             }
           } else {
-            console.log("Incorrect Password");
-            errors.general = "Incorrect Password";
-            return res.status(409).json({ errors }); // Conflict
+            validation.setErrors("Incorrect Password", validation.PASSWORD);
+            return res.status(409).json({ errors: validation.errors }); // Conflict
           }
         }
       );
@@ -118,12 +129,9 @@ class UsersController {
   }
 
   public getCurrentUser(req: Request, res: Response) {
-    const errors: {
-      general?: string;
-    } = {};
+    const validation = new Validation();
 
     let { authorization } = req.headers;
-
     if (authorization && process.env.JWT_SECRET !== undefined) {
       authorization = authorization.replace(/^Bearer\s/, ""); // Remove Bearer in JWT
 
@@ -133,21 +141,19 @@ class UsersController {
         (err: jwt.VerifyErrors) => {
           if (err) {
             console.log(err);
-            errors.general = "Unable to verify user";
-            return res.status(503).json(errors);
+            validation.setErrors("Unable to verify user", validation.GENERAL);
+            return res.status(503).json({ errors: validation.errors });
           }
           // data returned from the database
           const { email, kombuchas } = req.user;
-          res.json(req.user);
+          res.json({ email, kombuchas });
         }
       );
     }
   }
 
   public editUser(req: Request, res: Response) {
-    const errors: {
-      general?: string;
-    } = {};
+    const validation = new Validation();
 
     User.findByIdAndUpdate(
       req.params.userId,
@@ -155,8 +161,8 @@ class UsersController {
       (err: any, user: any) => {
         if (err) {
           console.log(err);
-          errors.general = "Failed to edit user";
-          return res.status(503).json(errors);
+          validation.setErrors("Failed to edit user", validation.GENERAL);
+          return res.status(503).json({ errors: validation.errors });
         }
         res.json({
           success: `Successfully updated user!`,
@@ -167,15 +173,13 @@ class UsersController {
   }
 
   public deleteUser(req: Request, res: Response) {
-    const errors: {
-      general?: string;
-    } = {};
+    const validation = new Validation();
 
     User.findByIdAndDelete(req.params.userId, (err: any, user: any) => {
       if (err) {
         console.log(err);
-        errors.general = "Error deleting user";
-        return res.status(503).json(errors);
+        validation.setErrors("Error deleting user", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
       res.json({ success: `Successfully deleted user` });
     });
