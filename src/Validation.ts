@@ -1,5 +1,5 @@
 import validator from "validator";
-import { isCompletelyEmpty } from "./utils";
+import { isCompletelyEmpty } from "./utils/utils";
 
 const { isEmail, isLength } = validator;
 

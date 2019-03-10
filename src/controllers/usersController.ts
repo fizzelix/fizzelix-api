@@ -1,18 +1,3 @@
-// Merge Declarations
-declare module "mongoose" {
-  interface Document {
-    password: string;
-  }
-}
-declare module "express" {
-  interface Request {
-    user: {
-      email: string;
-      kombuchas: [object];
-    };
-  }
-}
-
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
