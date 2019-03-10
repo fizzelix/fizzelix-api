@@ -4,18 +4,9 @@ import { User } from "../models/users";
 import { Kombucha } from "../models/kombucha";
 
 class KombuchaController {
-  public getKombuchas(req: Request, res: Response): void {
-    Kombucha.find({}, (err: any, kombuchas) => {
-      if (err) {
-        console.log("Failed to get kombuchas");
-        res.send(err);
-      }
-      res.json(kombuchas);
-    });
-  }
-
+  // POST; PROTECTED
   public addNewKombucha(req: Request, res: Response): void {
-    User.findOne({ username: req.user.username }, (err: any, user: any) => {
+    User.findOne({ email: req.user.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
         res.json({ error: "Couldn't find user" });

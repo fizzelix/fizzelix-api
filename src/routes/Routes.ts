@@ -19,7 +19,6 @@ class Routes {
     /***
       Kombucha Routes
     ***/
-    app.get("/kombucha", KombuchaController.getKombuchas);
     app.post("/kombucha", Auth.protect(), KombuchaController.addNewKombucha);
     app.get("/kombucha/:kombuchaId", KombuchaController.getKombucha);
     app.put(
