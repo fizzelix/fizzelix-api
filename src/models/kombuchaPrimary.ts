@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
-const kombuchaSchema = new mongoose.Schema({
+const kombuchaPrimarySchema = new mongoose.Schema({
   teaType: { type: String, required: true },
   containerSize: { type: String, required: true },
   containerType: { type: String, required: true },
   mainIngredients: {
-    waterInQts: { type: Number, required: true },
-    sugarInCups: { type: Number, required: true },
-    teaInGrams: { type: Number, required: true },
+    water: { type: Number, required: true },
+    sugar: { type: Number, required: true },
+    tea: { type: Number, required: true },
   },
   brewDate: { type: Date, required: true },
   bottleDate: { type: Date, required: false },
@@ -15,4 +15,4 @@ const kombuchaSchema = new mongoose.Schema({
   notes: { type: String, required: false },
 });
 
-export const Kombucha = mongoose.model("Kombucha", kombuchaSchema);
+export const KombuchaPrimary = mongoose.model("KombuchaPrimary", kombuchaPrimarySchema);
