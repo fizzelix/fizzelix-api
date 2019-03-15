@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const kombuchaPrimarySchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   teaType: { type: String, required: true },
   containerSize: { type: String, required: true },
   containerType: { type: String, required: true },
