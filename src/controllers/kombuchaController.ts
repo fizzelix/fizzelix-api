@@ -35,15 +35,18 @@ class KombuchaController {
     });
   }
 
-  public getKombucha(req: Request, res: Response): void {
-    // url looks like this: /kombucha/5c6e10b194bff38119f1f82u
-    // populate("user") refers to object key in kombuchaSchema
-    Kombucha.findById(req.params.kombuchaId, (err: any, kombucha: mongoose.Document) => {
+  public getKombucha(req: Request, res: Response) {
+    const validation = new Validation();
+    const { model } = getKombuchaType(req.params.type);
+    const { kombuchaId } = req.params;
+
+    model.findById(kombuchaId, (err: any, kombucha: any) => {
       if (err) {
-        console.log("Failed to get kombucha");
-        res.send(err);
+        console.log(err);
+        validation.setErrors("Failed to get kombucha", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
-      res.status(200).json(kombucha);
+      res.json(kombucha);
     });
   }
 
