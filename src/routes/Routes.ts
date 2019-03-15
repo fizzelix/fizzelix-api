@@ -22,7 +22,7 @@ class Routes {
     app.post("/kombucha/:type", Auth.protect(), KombuchaController.addNewKombucha);
     app.get("/kombucha/:type/:kombuchaId", Auth.protect(), KombuchaController.getKombucha);
     app.put("/kombucha/:type/:kombuchaId", Auth.protect(), KombuchaController.editKombucha);
-    app.delete("/kombucha/:kombuchaId", Auth.protect(), KombuchaController.deleteKombucha);
+    app.delete("/kombucha/:type/:kombuchaId", Auth.protect(), KombuchaController.deleteKombucha);
 
     /***
       Users Routes

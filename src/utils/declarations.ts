@@ -11,6 +11,7 @@ import { Request, Response } from "express";
 declare module "express" {
   interface Request {
     user: {
+      id: any;
       email: string;
       kombuchas: [object];
     };

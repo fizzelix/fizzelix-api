@@ -50,7 +50,7 @@ class KombuchaController {
     });
   }
 
-  public editKombucha(req: Request, res: Response): void {
+  public editKombucha(req: Request, res: Response) {
     const validation = new Validation();
     const { model } = getKombuchaType(req.params.type);
     const { kombuchaId } = req.params;
@@ -67,13 +67,35 @@ class KombuchaController {
     });
   }
 
-  public deleteKombucha(req: Request, res: Response): void {
-    Kombucha.findByIdAndDelete(req.params.kombuchaId, (err: any, kombucha: any) => {
+  public deleteKombucha(req: Request, res: Response) {
+    const validation = new Validation();
+    const { model, type } = getKombuchaType(req.params.type);
+    const { kombuchaId } = req.params;
+
+    // delete kombucha from kombucha model
+    model.findByIdAndDelete(kombuchaId, (err: any, kombucha: any) => {
       if (err) {
-        console.log("Failed to Delete kombucha");
-        res.send(err);
+        console.log(err || kombucha === null);
+        validation.setErrors("Failed to find kombucha to delete", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
-      res.redirect("/kombucha");
+      // delete kombucha from user model
+      User.findOne({ _id: req.user.id }, (err, user: any) => {
+        if (err) {
+          console.log("err");
+          validation.setErrors("Failed to your kombucha", validation.GENERAL);
+          return res.status(503).json({ errors: validation.errors });
+        }
+
+        const kombuchaArray = user.kombuchas[type];
+        const kombuchaPosition = user.kombuchas[type].indexOf(kombuchaId);
+
+        if (kombuchaPosition !== -1) {
+          kombuchaArray.splice(kombuchaPosition, 1);
+          user.save();
+        }
+      });
+      return res.json({ success: true });
     });
   }
 }
