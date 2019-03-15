@@ -51,12 +51,19 @@ class KombuchaController {
   }
 
   public editKombucha(req: Request, res: Response): void {
-    Kombucha.findByIdAndUpdate(req.params.kombuchaId, req.body, (err: any, kombucha: any) => {
+    const validation = new Validation();
+    const { model } = getKombuchaType(req.params.type);
+    const { kombuchaId } = req.params;
+    const newContent = req.body;
+
+    // 3rd parameter, {new: true}, returns the updated document
+    model.findByIdAndUpdate(kombuchaId, newContent, { new: true }, (err: any, kombucha: any) => {
       if (err) {
-        console.log("Failed to edit kombucha");
-        res.send(err);
+        console.log(err);
+        validation.setErrors("Failed to edit kombucha", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
-      res.redirect(`/kombucha/${kombucha._id}`);
+      res.json(kombucha);
     });
   }
 
