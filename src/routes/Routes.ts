@@ -14,19 +14,19 @@ class Routes {
 
     app.post("/register", UserController.register);
     app.post("/login", UserController.login);
-    app.get("/users/current", Auth.protect(), UserController.getCurrentUser);
 
     /***
-      Kombucha Routes
-    ***/
+    Kombucha Routes
+     ***/
     app.post("/kombucha/:type", Auth.protect(), KombuchaController.addNewKombucha);
     app.get("/kombucha/:type/:kombuchaId", Auth.protect(), KombuchaController.getKombucha);
     app.put("/kombucha/:type/:kombuchaId", Auth.protect(), KombuchaController.editKombucha);
     app.delete("/kombucha/:type/:kombuchaId", Auth.protect(), KombuchaController.deleteKombucha);
 
     /***
-      Users Routes
-    ***/
+    Users Routes
+     ***/
+    app.get("/users/current", Auth.protect(), UserController.getCurrentUser);
     app.put("/users/:userId", Auth.protect(), UserController.editUser);
     app.delete("/users/:userId", Auth.protect(), UserController.deleteUser);
   }
