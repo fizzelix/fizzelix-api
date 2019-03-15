@@ -1,3 +1,6 @@
+import { KombuchaPrimary } from "../models/kombuchaPrimary";
+import { KombuchaSecondary } from "../models/kombuchaSecondary";
+
 export const isCompletelyEmpty = (value: any): boolean => {
   if (
     value === undefined ||
@@ -8,4 +11,22 @@ export const isCompletelyEmpty = (value: any): boolean => {
     return true;
   }
   return false;
+};
+
+export const getKombuchaType = (urlParameter: any) => {
+  let kombuchaModel: any;
+  let kombuchaType: string = "";
+
+  if (urlParameter === "primary") {
+    kombuchaModel = KombuchaPrimary;
+    kombuchaType = "primary";
+  } else if (urlParameter === "secondary") {
+    kombuchaModel = KombuchaSecondary;
+    kombuchaType = "secondary";
+  }
+
+  return {
+    type: kombuchaType,
+    model: kombuchaModel,
+  };
 };

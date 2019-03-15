@@ -1,29 +1,35 @@
 import mongoose from "mongoose";
 import { Request, Response } from "express";
+import { Validation } from "../Validation";
+
 import { User } from "../models/users";
-import { Kombucha } from "../models/kombucha";
+import { getKombuchaType } from "../utils/utils";
 
 class KombuchaController {
-  // POST; PROTECTED
-  public addNewKombucha(req: Request, res: Response): void {
+  public addNewKombucha(req: Request, res: Response) {
+    const validation = new Validation();
+    const { type, model } = getKombuchaType(req.params.type);
+
     User.findOne({ email: req.user.email }, (err: any, user: any) => {
       if (err) {
         console.log(err);
-        res.json({ error: "Couldn't find user" });
+        validation.setErrors("Unable to find user. Try again later...", validation.GENERAL);
+        return res.status(503).json({ error: validation.errors }); // Service  Unavailable
       }
-
-      Kombucha.create(req.body, (err: any, kombucha: any) => {
+      model.create(req.body, (err: any, kombucha: any) => {
         if (err) {
           console.log(err);
-          res.json({ error: "Failed to create a kombucha" });
+          validation.setErrors("Unable to create kombucha. Try again later...", validation.GENERAL);
+          return res.status(503).json({ errors: validation.errors }); // Service  Unavailable
         }
-
-        user.kombuchas.push(kombucha);
-        user.save((err: any, data: any) => {
+        user.kombuchas[type].push(kombucha);
+        user.save((err: any, user: any) => {
           if (err) {
-            console.log("Failed to save data", err);
+            console.log(err);
+            validation.setErrors("Failed to save kombucha", validation.GENERAL);
+            return res.status(503).json({ errors: validation.errors }); // Service  Unavailable
           }
-          res.json({ message: "success" });
+          res.json(kombucha);
         });
       });
     });
@@ -32,43 +38,33 @@ class KombuchaController {
   public getKombucha(req: Request, res: Response): void {
     // url looks like this: /kombucha/5c6e10b194bff38119f1f82u
     // populate("user") refers to object key in kombuchaSchema
-    Kombucha.findById(
-      req.params.kombuchaId,
-      (err: any, kombucha: mongoose.Document) => {
-        if (err) {
-          console.log("Failed to get kombucha");
-          res.send(err);
-        }
-        res.status(200).json(kombucha);
+    Kombucha.findById(req.params.kombuchaId, (err: any, kombucha: mongoose.Document) => {
+      if (err) {
+        console.log("Failed to get kombucha");
+        res.send(err);
       }
-    );
+      res.status(200).json(kombucha);
+    });
   }
 
   public editKombucha(req: Request, res: Response): void {
-    Kombucha.findByIdAndUpdate(
-      req.params.kombuchaId,
-      req.body,
-      (err: any, kombucha: any) => {
-        if (err) {
-          console.log("Failed to edit kombucha");
-          res.send(err);
-        }
-        res.redirect(`/kombucha/${kombucha._id}`);
+    Kombucha.findByIdAndUpdate(req.params.kombuchaId, req.body, (err: any, kombucha: any) => {
+      if (err) {
+        console.log("Failed to edit kombucha");
+        res.send(err);
       }
-    );
+      res.redirect(`/kombucha/${kombucha._id}`);
+    });
   }
 
   public deleteKombucha(req: Request, res: Response): void {
-    Kombucha.findByIdAndDelete(
-      req.params.kombuchaId,
-      (err: any, kombucha: any) => {
-        if (err) {
-          console.log("Failed to Delete kombucha");
-          res.send(err);
-        }
-        res.redirect("/kombucha");
+    Kombucha.findByIdAndDelete(req.params.kombuchaId, (err: any, kombucha: any) => {
+      if (err) {
+        console.log("Failed to Delete kombucha");
+        res.send(err);
       }
-    );
+      res.redirect("/kombucha");
+    });
   }
 }
 
