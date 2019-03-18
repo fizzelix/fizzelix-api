@@ -11,7 +11,7 @@ class Authentication {
   private config(): void {
     const opt: StrategyOptions = {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET
+      secretOrKey: process.env.JWT_SECRET,
     };
 
     passport.use(
