@@ -2,7 +2,6 @@ import { Controller } from "./Controller";
 import { getKombuchaType } from "../utils/utils";
 import { Request, Response } from "express";
 import { User } from "../models/users";
-import { Errback } from "express-serve-static-core";
 
 class KombuchaController extends Controller {
   constructor() {
