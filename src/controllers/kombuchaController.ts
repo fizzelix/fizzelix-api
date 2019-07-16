@@ -2,44 +2,27 @@ import { Controller } from "./Controller";
 import { getKombuchaType } from "../utils/utils";
 import { Request, Response } from "express";
 import { User } from "../models/users";
+import { Errback } from "express-serve-static-core";
 
 class KombuchaController extends Controller {
   constructor() {
     super();
   }
 
-  public addNewKombucha = (req: Request, res: Response) => {
+  public addNewKombucha = async (req: Request, res: Response) => {
     const { type, model } = getKombuchaType(req.params.type);
 
-    User.findOne({ email: req.user.email }, (err: any, user: any) => {
-      if (err) {
-        console.log(err);
-        this.validation.setErrors(
-          "Unable to find user. Try again later...",
-          this.validation.GENERAL
-        );
-        return res.status(503).json({ error: this.validation.errors }); // Service  Unavailable
-      }
-      model.create(req.body, (err: any, kombucha: any) => {
-        if (err) {
-          console.log(err);
-          this.validation.setErrors(
-            "Unable to create kombucha. Try again later...",
-            this.validation.GENERAL
-          );
-          return res.status(503).json({ errors: this.validation.errors }); // Service  Unavailable
-        }
-        user.kombuchas[type].push(kombucha);
-        user.save((err: any) => {
-          if (err) {
-            console.log(err);
-            this.validation.setErrors("Failed to save kombucha", this.validation.GENERAL);
-            return res.status(503).json({ errors: this.validation.errors }); // Service  Unavailable
-          }
-          res.json(kombucha);
-        });
-      });
-    });
+    try {
+      const user: any = await User.findOne({ email: req.user.email });
+      const newKombucha = await model.create(req.body);
+      user.kombuchas[type].push(newKombucha);
+      await user.save();
+      await res.json(newKombucha);
+    } catch (err) {
+      const errorMessage = (err as Error).message;
+      this.validation.setErrors(errorMessage, this.validation.GENERAL);
+      return res.status(503).json({ error: this.validation.errors }); // Service  Unavailable
+    }
   };
 
   public getKombucha = (req: Request, res: Response) => {
