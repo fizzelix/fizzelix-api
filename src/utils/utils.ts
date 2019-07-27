@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { KombuchaPrimary } from "../models/kombuchaPrimary";
 import { KombuchaSecondary } from "../models/kombuchaSecondary";
 
@@ -13,9 +14,11 @@ export const isCompletelyEmpty = (value: any): boolean => {
   return false;
 };
 
-export const getKombuchaType = (urlParameter: any) => {
-  let kombuchaModel: any;
-  let kombuchaType: string = "";
+export const getKombuchaType = (
+  urlParameter: string
+): { type: string; model: mongoose.Model<mongoose.Document, {}> } => {
+  let kombuchaModel: mongoose.Model<mongoose.Document, {}>;
+  let kombuchaType: string;
 
   if (urlParameter === "primary") {
     kombuchaModel = KombuchaPrimary;
@@ -23,6 +26,9 @@ export const getKombuchaType = (urlParameter: any) => {
   } else if (urlParameter === "secondary") {
     kombuchaModel = KombuchaSecondary;
     kombuchaType = "secondary";
+  } else {
+    kombuchaModel = KombuchaPrimary;
+    kombuchaType = "primary";
   }
 
   return {
