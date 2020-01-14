@@ -78,7 +78,7 @@ class UsersController {
             jwt.sign(
               payload,
               process.env.JWT_SECRET,
-              { expiresIn: 1200 }, // 20 min
+              { expiresIn: "3 days" },
               (err: any, token: string) => {
                 if (err) {
                   console.log(err);
