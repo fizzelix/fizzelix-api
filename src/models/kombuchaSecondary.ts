@@ -7,6 +7,7 @@ const KombuchaSecondarySchema = new mongoose.Schema({
   },
   bottleDate: { type: Date, required: true },
   fermentationDuration: { type: Number, required: true },
+  flavors: { type: String, required: false },
   notes: { type: String, required: false },
 });
 

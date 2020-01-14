@@ -14,6 +14,7 @@ const kombuchaPrimarySchema = new mongoose.Schema({
     tea: { type: Number, required: true },
   },
   brewDate: { type: Date, required: true },
+  brewDuration: { type: Number, required: true },
   notes: { type: String, required: false },
 });
 
