@@ -16,6 +16,8 @@ const kombuchaPrimarySchema = new mongoose.Schema({
   brewDate: { type: Date, required: true },
   brewDuration: { type: Number, required: true },
   notes: { type: String, required: false },
+  archived: { type: Boolean, required: true },
+  convertedToSecondary: { type: Boolean, required: true },
 });
 
 export const KombuchaPrimary = mongoose.model("KombuchaPrimary", kombuchaPrimarySchema);

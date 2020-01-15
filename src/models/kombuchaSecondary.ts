@@ -9,6 +9,7 @@ const KombuchaSecondarySchema = new mongoose.Schema({
   fermentationDuration: { type: Number, required: true },
   flavors: { type: String, required: false },
   notes: { type: String, required: false },
+  archived: { type: Boolean, required: true },
 });
 
 export const KombuchaSecondary = mongoose.model("KombuchaSecondary", KombuchaSecondarySchema);

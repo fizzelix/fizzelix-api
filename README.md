@@ -67,6 +67,8 @@ _:type = "primary" or "secondary"_
   brewDate: { type: Date, required: true },
   brewDuration: { type: Number, required: true },
   notes: { type: String, required: false },
+  archived: { type: Boolean, required: true },
+  convertedToSecondary: { type: Boolean, required: true },
 
 ```
 
@@ -77,6 +79,7 @@ _:type = "primary" or "secondary"_
   fermentationDuration: { type: Number, required: true },
   flavors: { type: String, required: false },
   notes: { type: String, required: false },
+  archived: { type: Boolean, required: true },
 ```
 
 #### Validation Error Object
