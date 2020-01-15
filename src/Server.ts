@@ -6,7 +6,7 @@ import cors from "cors";
 import Authentication from "./Authentication";
 import Router from "./routes/Routes";
 
-class Server {
+export class Server {
   private app: express.Application;
   private PORT: number | string;
 
@@ -31,5 +31,3 @@ class Server {
     Router.routes(this.app);
   }
 }
-
-export default new Server(8000);

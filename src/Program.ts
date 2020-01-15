@@ -1,10 +1,10 @@
 require("dotenv").config();
-import Server from "./Server";
+import { Server } from "./Server";
 import Database from "./Database";
 
 class Program {
   static init(): void {
-    Server.start();
+    new Server(8000).start();
     Database.connect();
     Database.showConnection();
   }
