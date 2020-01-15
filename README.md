@@ -55,6 +55,10 @@ _:type = "primary" or "secondary"_
 #### Primary Kombucha Fermentation
 
 ```typescript
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   teaType: { type: String, required: true },
   containerSize: { type: String, required: true },
   containerType: { type: String, required: true },
@@ -74,6 +78,10 @@ _:type = "primary" or "secondary"_
 #### Secondary Kombucha Fermentation
 
 ```typescript
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   bottleDate: { type: Date, required: true },
   fermentationDuration: { type: Number, required: true },
   flavors: { type: String, required: false },
