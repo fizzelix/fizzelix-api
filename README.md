@@ -33,8 +33,8 @@ _:type = "primary" or "secondary"_
 
 #### User
 
-```json
- email: { type: String, required: true, lowercase: true, trim: true },
+```typescript
+  email: { type: String, required: true, lowercase: true, trim: true },
   password: { type: String, required: true, trim: true, minlength: 4 },
   username: { type: String, required: false },
   kombuchas: {
@@ -55,7 +55,7 @@ _:type = "primary" or "secondary"_
 
 #### Primary Kombucha Fermentation
 
-```json
+```typescript
   teaType: { type: String, required: true },
   containerSize: { type: String, required: true },
   containerType: { type: String, required: true },
@@ -72,7 +72,7 @@ _:type = "primary" or "secondary"_
 
 #### Secondary Kombucha Fermentation
 
-```json
+```typescript
   bottleDate: { type: Date, required: true },
   fermentationDuration: { type: Number, required: true },
   flavors: { type: String, required: false },
