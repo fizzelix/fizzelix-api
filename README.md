@@ -36,7 +36,6 @@ _:type = "primary" or "secondary"_
 ```typescript
   email: { type: String, required: true, lowercase: true, trim: true },
   password: { type: String, required: true, trim: true, minlength: 4 },
-  username: { type: String, required: false },
   kombuchas: {
     primary: [
       {
