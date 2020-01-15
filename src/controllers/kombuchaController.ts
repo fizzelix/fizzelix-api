@@ -1,14 +1,11 @@
-import { Controller } from "./Controller";
+import { Validation } from "../Validation";
 import { getKombuchaType } from "../utils/utils";
 import { Request, Response } from "express";
 import { User } from "../models/users";
 
-class KombuchaController extends Controller {
-  constructor() {
-    super();
-  }
-
+class KombuchaController {
   public addNewKombucha = async (req: Request, res: Response) => {
+    const validation = new Validation();
     const { type, model } = getKombuchaType(req.params.type);
 
     try {
@@ -16,29 +13,31 @@ class KombuchaController extends Controller {
       const newKombucha = await model.create(req.body);
       user.kombuchas[type].push(newKombucha);
       await user.save();
-      await res.json(newKombucha);
+      res.json(newKombucha);
     } catch (err) {
       const errorMessage = (err as Error).message;
-      this.validation.setErrors(errorMessage, this.validation.GENERAL);
-      return res.status(503).json({ error: this.validation.errors }); // Service  Unavailable
+      validation.setErrors(errorMessage, validation.GENERAL);
+      return res.status(503).json({ error: validation.errors }); // Service  Unavailable
     }
   };
 
   public getKombucha = (req: Request, res: Response) => {
+    const validation = new Validation();
     const { model } = getKombuchaType(req.params.type);
     const { kombuchaId } = req.params;
 
     model.findById(kombuchaId, (err: any, kombucha: any) => {
       if (err) {
         console.log(err);
-        this.validation.setErrors("Failed to get kombucha", this.validation.GENERAL);
-        return res.status(503).json({ errors: this.validation.errors });
+        validation.setErrors("Failed to get kombucha", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
       res.json(kombucha);
     });
   };
 
   public editKombucha = (req: Request, res: Response) => {
+    const validation = new Validation();
     const { model } = getKombuchaType(req.params.type);
     const { kombuchaId } = req.params;
     const newContent = req.body;
@@ -47,14 +46,15 @@ class KombuchaController extends Controller {
     model.findByIdAndUpdate(kombuchaId, newContent, { new: true }, (err: any, kombucha: any) => {
       if (err) {
         console.log(err);
-        this.validation.setErrors("Failed to edit kombucha", this.validation.GENERAL);
-        return res.status(503).json({ errors: this.validation.errors });
+        validation.setErrors("Failed to edit kombucha", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
       res.json(kombucha);
     });
   };
 
   public deleteKombucha = (req: Request, res: Response) => {
+    const validation = new Validation();
     const { model, type } = getKombuchaType(req.params.type);
     const { kombuchaId } = req.params;
 
@@ -62,15 +62,15 @@ class KombuchaController extends Controller {
     model.findByIdAndDelete(kombuchaId, (err: any, kombucha: any) => {
       if (err) {
         console.log(err || kombucha === null);
-        this.validation.setErrors("Failed to find kombucha to delete", this.validation.GENERAL);
-        return res.status(503).json({ errors: this.validation.errors });
+        validation.setErrors("Failed to find kombucha to delete", validation.GENERAL);
+        return res.status(503).json({ errors: validation.errors });
       }
       // delete kombucha from user model
       User.findOne({ _id: req.user.id }, (err, user: any) => {
         if (err) {
           console.log("err");
-          this.validation.setErrors("Failed to your kombucha", this.validation.GENERAL);
-          return res.status(503).json({ errors: this.validation.errors });
+          validation.setErrors("Failed to your kombucha", validation.GENERAL);
+          return res.status(503).json({ errors: validation.errors });
         }
 
         const kombuchaArray = user.kombuchas[type];
